@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  title: User registration API
+  description: Parking-App API
+  version: 0.1.9
+
+servers:
+  - url: http://localhost:3000
+    description: local server
+  - url: http://todo-app-api-production-2c38.up.railway.app
+    description: production server
+
+paths:
+  /api/send:
+    post:
+      summary: Create new user
+      tags:
+        - Registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: # changed from userName
+                  type: string
+                  description: The username of the user
+                password:
+                  type: string
+                  description: The password of the user
+                email:
+                  type: string
+                  description: The email of the user
+                fullname: # changed from fullName
+                  type: string
+                  description: The fullname of the user
+                phonenumber: # changed from phoneNumber
+                  type: string
+                  description: The phonenumber of the user
+      responses:
+        "200":
+          description: User successfully added to the database
+        "400":
+          description: Bad request, username is required
+        "500":
+          description: Internal server error
+
+  /api/login:
+    post:
+      summary: User login
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The username of the user
+                password:
+                  type: string
+                  description: The password of the user
+      responses:
+        "200":
+          description: User successfully logged in
+        "401":
+          description: Unauthorized, invalid credentials
+        "500":
+          description: Internal server error
+  /api/recover-password:
+    post:
+      summary: User password recovery
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The email of the user
+      responses:
+        "200":
+          description: Password recovery email sent
+        "400":
+          description: Bad request, email is required
+        "500":
+          description: Internal server error
+
+  /api/verify:
+    put:
+      summary: Verify a user
+      description: This endpoint verifies a user based on a key passed in the query string.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                param:
+                  type: string
+                  description: The phonenumber of the user
+
+      responses:
+        "200":
+          description: User verification status updated to true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User verification status updated to true
+        "400":
+          description: Invalid verification key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid verification key
+
+  paths:
+  /api/reset-password:
+    put:
+      summary: Reset user password
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: The recovery token
+                password:
+                  type: string
+                  description: The new password
+      responses:
+        "200":
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset successful
+        "400":
+          description: Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid token
+        "500":
+          description: Internal server error
