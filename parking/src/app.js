@@ -190,6 +190,47 @@ app.post("/api/recover-password", async (req, res, next) => {
   }
 });
 
+app.put("/api/reset-password", async (req, res, next) => {
+  try {
+    const { param, password } = req.body;
+    console.log(param);
+
+    const client = await pool.connect();
+
+    // Check if the key exists in the passrecovery table
+    const result = await client.query({
+      text: "SELECT * FROM passrecovery WHERE crypto_key = $1",
+      values: [param],
+    });
+
+    if (result.rows.length > 0) {
+      // If the key exists, update the user's password
+      const email = result.rows[0].email;
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      await client.query({
+        text: "UPDATE users SET password = $1 WHERE email = $2",
+        values: [hashedPassword, email],
+      });
+
+      // Delete the key from the passrecovery table
+      await client.query({
+        text: "DELETE FROM passrecovery WHERE email = $1",
+        values: [email],
+      });
+
+      res.send({ message: "Password updated successfully" });
+    } else {
+      // If the key does not exist, send an error message
+      res.status(400).send({ error: "Invalid password reset key" });
+    }
+  } catch (error) {
+    // Handle the error
+    console.error(error);
+    res.status(500).send({ error: "Internal server error" });
+  }
+});
+
 app.use("/", ...swaggerMiddleware());
 
 app.listen(3000, () => {

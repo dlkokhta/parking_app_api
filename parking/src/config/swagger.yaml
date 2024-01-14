@@ -144,7 +144,7 @@ paths:
             schema:
               type: object
               properties:
-                token:
+                param:
                   type: string
                   description: The recovery token
                 password:
