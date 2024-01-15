@@ -10,6 +10,13 @@ servers:
   - url: http://todo-app-api-production-2c38.up.railway.app
     description: production server
 
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
 paths:
   /api/send:
     post:
@@ -174,48 +181,42 @@ paths:
         "500":
           description: Internal server error
 
-  
   /api/add-car:
     post:
-      summary: Add a new car
-      operationId: addCar
+      tags:
+        - Auth
       security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                user_id:
-                  type: string
-                car_model:
-                  type: string
-                car_make:
-                  type: string
-                car_year:
-                  type: integer
-                car_color:
-                  type: string
-                license_plate:
-                  type: string
+        - bearerAuth: []
+      summary: Add a new car
+      description: This endpoint allows you to add a new car.
+      parameters:
+        - in: body
+          name: car
+          description: The car to create.
+          schema:
+            type: object
+            required:
+              - user_id
+              - car_model
+              - car_make
+              - car_year
+              - car_color
+              - license_plate
+            properties:
+              user_id:
+                type: integer
+              car_model:
+                type: string
+              car_make:
+                type: string
+              car_year:
+                type: integer
+              car_color:
+                type: string
+              license_plate:
+                type: string
       responses:
-        '200':
+        200:
           description: Car added successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  car:
-                    type: object
-        '500':
+        500:
           description: Internal server error
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer

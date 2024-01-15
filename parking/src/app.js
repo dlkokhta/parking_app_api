@@ -8,12 +8,16 @@ import { sensitiveHeaders } from "./mail/edge.js";
 import { recoveryHeader } from "./mail/edge.js";
 import CryptoJS from "crypto-js";
 import verifyToken from "./middlewares/auth-middleware.js";
+import cors from "cors";
+import dotenv from "dotenv";
+import router from "./routes/parkingRouter.js";
+dotenv.config();
 
 // import { sendVerificationLink } from "./mail/edge.js";
 
 const { Pool } = pg;
 
-const pool = new Pool({
+export const pool = new Pool({
   user: "postgres",
   host: "localhost",
   database: "parking",
@@ -23,6 +27,7 @@ const pool = new Pool({
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 app.post("/api/send", async (req, res, next) => {
   const randomString = CryptoJS.lib.WordArray.random(32).toString(
@@ -232,7 +237,7 @@ app.put("/api/reset-password", async (req, res, next) => {
   }
 });
 
-app.post("/api/add-car", verifyToken);
+app.use("/", router);
 
 app.use("/", ...swaggerMiddleware());
 
