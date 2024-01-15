@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import { sensitiveHeaders } from "./mail/edge.js";
 import { recoveryHeader } from "./mail/edge.js";
 import CryptoJS from "crypto-js";
+import verifyToken from "./middlewares/auth-middleware.js";
 
 // import { sendVerificationLink } from "./mail/edge.js";
 
@@ -230,6 +231,8 @@ app.put("/api/reset-password", async (req, res, next) => {
     res.status(500).send({ error: "Internal server error" });
   }
 });
+
+app.post("/api/add-car", verifyToken);
 
 app.use("/", ...swaggerMiddleware());
 

@@ -173,3 +173,49 @@ paths:
                     example: Invalid token
         "500":
           description: Internal server error
+
+  
+  /api/add-car:
+    post:
+      summary: Add a new car
+      operationId: addCar
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                car_model:
+                  type: string
+                car_make:
+                  type: string
+                car_year:
+                  type: integer
+                car_color:
+                  type: string
+                license_plate:
+                  type: string
+      responses:
+        '200':
+          description: Car added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  car:
+                    type: object
+        '500':
+          description: Internal server error
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
